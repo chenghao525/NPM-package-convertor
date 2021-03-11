@@ -1,0 +1,1 @@
+babel --plugins @babel/plugin-transform-classes ./node_modules/commander  --out-dir dist

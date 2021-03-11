@@ -1,0 +1,32 @@
+{
+  "name": "babel-easy-class-convertor",
+  "version": "1.0.0",
+  "description": "Convert ES5+ class to function",
+  "main": "index.js",
+  "dependencies": {
+    "@babel/core": "^7.13.10",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-plugin-transform-class": "^0.3.0",
+    "babel-polyfill": "^6.26.0",
+    "commander": "^7.1.0"
+  },
+  "devDependencies": {
+    "@babel/node": "^7.13.10",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenghao525/NPM-package-convertor.git"
+  },
+  "author": "Chenghao Sun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chenghao525/NPM-package-convertor/issues"
+  },
+  "homepage": "https://github.com/chenghao525/NPM-package-convertor#readme"
+}
