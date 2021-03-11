@@ -1,46 +1,21 @@
-class TestClass{
-    constructor(name, year){
-      this.name = name;
-      this.year = year;
-    }
+var cp = require("child_process");
 
-    testMethod(){
-      console.log("From test method");
-    }
+class foo {
+  constructor (input){
+    this.src = input;
   }
 
-  let test = new TestClass();
-  test.testMethod();
+  vul () {
+    cp.exec(this.src);
+  }
+}
 
-
-// if (!Object.create) {
-//   Object.create = function (prototype) {
-//     function F() {}
-//     F.prototype = prototype;
-//     return new F();
-//   }
-// }
-
-// if (!Object.assign) {
-//   Object.assign = function(target, properties) {
-//     for (var key in properties) target[key] = properties[key];
-//   };
-// }
-
-// function vul(input) {
-//   var src = input + '/cmd';
-//   cp.exec(src);
-// }
-
-// foo.prototype["vul"] = vul;
-
-// Object.assign(foo.prototype, {
-//   vul: function vul(input) {
-//     var src = input + '/cmd';
-//     cp.exec(src);
-//   }
-// });
+function expolit(input) {
+  var f = new foo(input);
+  f.vul();
+}
 
 module.exports = {
-  TestClass: TestClass
+  foo: foo,
+  expolit: expolit
 }

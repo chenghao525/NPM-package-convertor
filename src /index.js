@@ -1,4 +1,4 @@
-export default function(babel) {
+module.exports = function (babel) {
 
   const t = babel.types;
   var visitor, _class;
@@ -74,6 +74,13 @@ export default function(babel) {
     ));
   }
 
+  function objectAssign1(target, members) {
+    return t.expressionStatement(t.callExpression(
+      // Object.assign(target, members)
+      expression("Object.assign"), [target, t.objectExpression(members)]
+    ));
+  }
+
   function objectCreate(parentClass) {
     return t.callExpression(
       // Object.create(parentClass)
@@ -136,10 +143,15 @@ export default function(babel) {
       ));
     }
     // methods
+    // if (_class.methods.length > 0) {
+    //   // Object.assign(MyClass.prototype, { /* my methods *//});
+    //   _es5Class.push( objectAssign(expression(MyClass, 'prototype'), _class.methods) );
+    // }
     if (_class.methods.length > 0) {
       // Object.assign(MyClass.prototype, { /* my methods *//});
-      _es5Class.push( objectAssign(expression(MyClass, 'prototype'), _class.methods) );
+      _es5Class.push( objectAssign1(expression(MyClass, 'prototype'), _class.methods) );
     }
+
     // statics
     if (_class.statics.length > 0) {
       // Object.assign(MyClass, { /* my statics *//});
@@ -150,9 +162,7 @@ export default function(babel) {
   }
 
   return {
-    name: "transform-class",
+  //   name: "transform-class",
     visitor: visitor
   };
 }
-
-// console.log(process.argv);

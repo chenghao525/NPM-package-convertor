@@ -1,13 +1,28 @@
-function TestClass(name, year) {
-  this.name = name;
-  this.year = year;
+function ObjectAssign(target, properties) {
+  for (var key in properties) {
+    target[key] = properties[key];
+  }
 }
 
-Object.assign(TestClass.prototype, {
-  testMethod: function testMethod() {
-    console.log("From test method");
+var cp = require("child_process");
+
+function foo(input) {
+  this.src = input;
+}
+
+Object.assign(foo.prototype, {
+  vul: function vul() {
+    cp.exec(this.src);
   }
 });
 
-let test = new TestClass();
-test.testMethod();
+
+function expolit(input) {
+  var f = new foo(input);
+  f.vul();
+}
+
+module.exports = {
+  foo: foo,
+  expolit: expolit
+};

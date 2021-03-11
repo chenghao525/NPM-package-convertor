@@ -4,6 +4,10 @@ module.exports = function (babel) {
     var visitor, _class;
   
     visitor = {
+      Program(path) {
+        // Insert at the beginning ObjectAssign function
+        path.unshiftContainer('body', t.functionDeclaration(t.Identifier("ObjectAssign"), [t.identifier("target"), t.identifier("properties")],t.blockStatement(getObjAssignStatement())));
+      },
       // CLASS
       ClassDeclaration: {
         enter(path) {
@@ -42,6 +46,17 @@ module.exports = function (babel) {
     };
   
     // Utils
+    function getObjAssignStatement(){
+      var objAssignStatement = [];
+      var left = t.VariableDeclaration("var",[t.VariableDeclarator(t.Identifier("key"))]);
+      var right = t.Identifier("properties");
+      var bodyStatementExpression = t.assignmentExpression("=", t.memberExpression(t.Identifier("target"),t.Identifier("key"),true),t.memberExpression(t.Identifier("properties"),t.Identifier("key"),true));
+      var bodyStatement = [t.expressionStatement(bodyStatementExpression)];
+
+      var body = t.blockStatement(bodyStatement);
+      objAssignStatement.push(t.forInStatement(left, right, body));
+      return objAssignStatement;
+    }
   
     function isString(value) {
         return typeof value === 'string';
@@ -68,6 +83,13 @@ module.exports = function (babel) {
     }
   
     function objectAssign(target, members) {
+      return t.expressionStatement(t.callExpression(
+        // Object.assign(target, members)
+        expression("Object.assign"), [target, t.objectExpression(members)]
+      ));
+    }
+
+    function objectAssign1(target, members) {
       return t.expressionStatement(t.callExpression(
         // Object.assign(target, members)
         expression("Object.assign"), [target, t.objectExpression(members)]
@@ -140,6 +162,11 @@ module.exports = function (babel) {
         // Object.assign(MyClass.prototype, { /* my methods *//});
         _es5Class.push( objectAssign(expression(MyClass, 'prototype'), _class.methods) );
       }
+      // if (_class.methods.length > 0) {
+      //   // Object.assign(MyClass.prototype, { /* my methods *//});
+      //   _es5Class.push( objectAssign1(expression(MyClass, 'prototype'), _class.methods) );
+      // }
+
       // statics
       if (_class.statics.length > 0) {
         // Object.assign(MyClass, { /* my statics *//});
