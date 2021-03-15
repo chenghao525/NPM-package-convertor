@@ -5,8 +5,9 @@ module.exports = function (babel) {
   
     visitor = {
       Program(path) {
-        // Insert at the beginning ObjectAssign function
-        path.unshiftContainer('body', t.functionDeclaration(t.Identifier("ObjectAssign"), [t.identifier("target"), t.identifier("properties")],t.blockStatement(getObjAssignStatement())));
+        // Insert at the beginning: ObjectAssign function
+        path.unshiftContainer('body', t.functionDeclaration(t.Identifier("objectAssign"), [t.identifier("target"), t.identifier("properties")],t.blockStatement(getObjAssignStatement())));
+        path.unshiftContainer('body', t.functionDeclaration(t.Identifier("objectCreate"), [t.identifier("prototype")],t.blockStatement(getObjCreateStatement())));
       },
       // CLASS
       ClassDeclaration: {
@@ -57,6 +58,27 @@ module.exports = function (babel) {
       objAssignStatement.push(t.forInStatement(left, right, body));
       return objAssignStatement;
     }
+
+    function getObjCreateStatement(){
+      var objCreateStatement = []
+
+      //function F() {}
+      var functionFDeclaration = t.functionDeclaration(t.identifier("F"), [], t.blockStatement([]));
+
+      //F.prototype = prototype;
+      var assignmentExpression = t.assignmentExpression("=", t.memberExpression(t.Identifier("F"),t.Identifier("prototype"),false), t.identifier("prototype"));
+      var expressionStatement = t.expressionStatement(assignmentExpression);
+
+      //return new F();
+      var newExpression = t.newExpression(t.identifier("F"),[]);
+      var returnStatement = t.returnStatement(newExpression);
+
+      objCreateStatement.push(functionFDeclaration);
+      objCreateStatement.push(expressionStatement);
+      objCreateStatement.push(returnStatement);
+
+      return objCreateStatement;
+    }
   
     function isString(value) {
         return typeof value === 'string';
@@ -85,21 +107,14 @@ module.exports = function (babel) {
     function objectAssign(target, members) {
       return t.expressionStatement(t.callExpression(
         // Object.assign(target, members)
-        expression("Object.assign"), [target, t.objectExpression(members)]
-      ));
-    }
-
-    function objectAssign1(target, members) {
-      return t.expressionStatement(t.callExpression(
-        // Object.assign(target, members)
-        expression("Object.assign"), [target, t.objectExpression(members)]
+        expression("objectAssign"), [target, t.objectExpression(members)]
       ));
     }
   
     function objectCreate(parentClass) {
       return t.callExpression(
         // Object.create(parentClass)
-        expression("Object.create"), [parentClass]
+        expression("objectCreate"), [parentClass]
       );
     }
   
